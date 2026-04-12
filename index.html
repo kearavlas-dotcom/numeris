@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Numeris — Your Life Blueprint</title>
+
+<!-- PWA Meta -->
+<meta name="description" content="Decode your cosmic blueprint. Discover your life path, soul purpose, career destiny, and more.">
+<meta name="theme-color" content="#06060f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Numeris">
+
+<!-- iOS PWA Support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Numeris">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%2306060f'/%3E%3Ccircle cx='256' cy='256' r='220' fill='none' stroke='%23c9a84c' stroke-width='3' opacity='.4'/%3E%3Cpolygon points='256,90 346,290 166,290' fill='none' stroke='%23e8cc7a' stroke-width='5'/%3E%3Cpolygon points='256,422 346,222 166,222' fill='none' stroke='%23c9a84c' stroke-width='5' opacity='.8'/%3E%3Ccircle cx='256' cy='256' r='30' fill='%23c9a84c' opacity='.9'/%3E%3Ccircle cx='256' cy='256' r='16' fill='%23f5e9c0'/%3E%3C/svg%3E">
+
+<!-- Web App Manifest (injected by JS) -->
+<link rel="manifest" id="pwa-manifest">
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#c9a84c;--gold-light:#e8cc7a;--gold-dim:#6b5420;--gold-pale:#f5e9c0;
+  --bg:#06060f;--bg2:#0d0d1c;--bg3:#12122a;
+  --text:#ede5d5;--text-dim:#8a7e6a;--text-muted:#4a4438;
+  --purple:#7b6fcf;--rose:#c97070;--emerald:#5aaa7a;--sky:#6aaacf;
+  --radius:14px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Cormorant Garamond',serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;justify-content:center;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(201,168,76,0.08),transparent),
+             radial-gradient(ellipse 60% 40% at 80% 100%,rgba(123,111,207,0.06),transparent);
+}
+/* Starfield */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 15%,rgba(201,168,76,0.6) 0%,transparent 100%),
+    radial-gradient(1px 1px at 25% 55%,rgba(255,255,255,0.25) 0%,transparent 100%),
+    radial-gradient(1px 1px at 48% 8%,rgba(255,255,255,0.35) 0%,transparent 100%),
+    radial-gradient(1px 1px at 68% 78%,rgba(201,168,76,0.4) 0%,transparent 100%),
+    radial-gradient(2px 2px at 12% 42%,rgba(201,168,76,0.7) 0%,transparent 100%),
+    radial-gradient(1px 1px at 82% 22%,rgba(255,255,255,0.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 55% 88%,rgba(201,168,76,0.3) 0%,transparent 100%),
+    radial-gradient(2px 2px at 90% 60%,rgba(201,168,76,0.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 35% 35%,rgba(255,255,255,0.2) 0%,transparent 100%),
+    radial-gradient(1px 1px at 72% 48%,rgba(255,255,255,0.15) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 18% 72%,rgba(201,168,76,0.45) 0%,transparent 100%),
+    radial-gradient(1px 1px at 60% 18%,rgba(255,255,255,0.2) 0%,transparent 100%);
+}
+.app{width:100%;max-width:430px;min-height:100vh;position:relative;z-index:1;padding-bottom:80px}
+.screen{display:none}.screen.active{display:block}
+
+/* ── LOGO ── */
+.logo-wrap{display:flex;flex-direction:column;align-items:center;gap:0}
+.logo-svg{width:96px;height:96px;filter:drop-shadow(0 0 18px rgba(201,168,76,0.35))}
+.logo-wordmark{font-family:'Cinzel',serif;font-size:32px;font-weight:900;letter-spacing:10px;
+  background:linear-gradient(160deg,var(--gold-pale) 0%,var(--gold) 50%,#7a5a1a 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-top:-4px}
+.logo-tagline{font-size:11px;font-style:italic;color:var(--text-dim);letter-spacing:3px;margin-top:4px}
+
+/* ── SHARED ── */
+.gold-line{width:64px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:24px auto}
+.section-title{font-family:'Cinzel',serif;font-size:18px;font-weight:600;letter-spacing:3px;color:var(--gold-light);margin-bottom:6px}
+.section-sub{font-size:15px;font-style:italic;color:var(--text-dim);line-height:1.7;margin-bottom:32px}
+.back-btn{display:flex;align-items:center;gap:8px;color:var(--gold-dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;background:none;border:none;transition:color .2s;margin-bottom:36px}
+.back-btn:hover{color:var(--gold)}
+.btn-gold{font-family:'Cinzel',serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--bg);background:linear-gradient(135deg,var(--gold-light),var(--gold));border:none;padding:15px 32px;border-radius:4px;cursor:pointer;transition:all .3s;font-weight:700}
+.btn-gold:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,168,76,0.45)}
+.btn-gold:disabled{opacity:.35;cursor:not-allowed}
+.btn-outline{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);background:none;border:1px solid rgba(201,168,76,0.2);padding:12px 24px;border-radius:4px;cursor:pointer;transition:all .2s}
+.btn-outline:hover{color:var(--gold);border-color:rgba(201,168,76,0.45)}
+
+/* ── INTRO ── */
+#screen-intro{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:48px 24px;text-align:center}
+.intro-text{font-size:16px;line-height:2;color:var(--text-dim);max-width:300px;margin-bottom:14px;font-style:italic}
+.free-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:100px;padding:7px 18px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:32px}
+
+/* ── INPUT ── */
+#screen-input{padding:56px 22px 40px}
+.input-row{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:10px}
+input[type=number],input[type=text]{width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.18);border-radius:8px;padding:13px 14px;color:var(--text);font-family:'Cormorant Garamond',serif;font-size:19px;text-align:center;outline:none;transition:border-color .3s,background .3s;-moz-appearance:textfield}
+input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appearance:none}
+input:focus{border-color:var(--gold);background:rgba(201,168,76,0.05)}
+input[type=text]{text-align:left;font-size:16px}
+.input-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);display:block;margin-bottom:8px}
+.input-hint{font-size:11px;color:var(--text-muted);text-align:center;margin-top:5px;font-style:italic}
+.lp-preview{background:linear-gradient(135deg,rgba(201,168,76,0.07),rgba(123,111,207,0.07));border:1px solid rgba(201,168,76,0.15);border-radius:var(--radius);padding:22px;text-align:center;margin:28px 0;display:none}
+.lp-preview.visible{display:block}
+.lp-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase}
+.lp-num{font-family:'Cinzel',serif;font-size:52px;font-weight:700;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.lp-name{font-size:14px;font-style:italic;color:var(--text-dim);margin-top:4px}
+
+/* ── PRICING ── */
+#screen-pricing{min-height:100vh}
+.pricing-hero{padding:48px 22px 24px;text-align:center;border-bottom:1px solid rgba(201,168,76,0.08)}
+.trial-banner{display:none;align-items:center;justify-content:center;gap:8px;background:rgba(255,140,80,0.08);border:1px solid rgba(255,140,80,0.2);border-radius:100px;padding:7px 16px;margin-bottom:18px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#e8a070;text-transform:uppercase}
+.trial-banner.show{display:flex}
+.pricing-title{font-family:'Cinzel',serif;font-size:20px;letter-spacing:3px;color:var(--gold-light)}
+.pricing-sub{font-size:15px;font-style:italic;color:var(--text-dim);max-width:280px;margin:8px auto 0;line-height:1.6}
+.plans{padding:20px 16px;display:flex;flex-direction:column;gap:12px}
+.plan{background:rgba(255,255,255,0.02);border:1px solid rgba(201,168,76,0.14);border-radius:var(--radius);padding:18px 16px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.plan:hover{border-color:rgba(201,168,76,0.35)}
+.plan.sel{border-color:var(--gold);background:rgba(201,168,76,0.06);box-shadow:0 0 20px rgba(201,168,76,0.1)}
+.plan.hot{border-color:rgba(201,168,76,0.4);background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(123,111,207,0.04))}
+.plan.hot.sel{box-shadow:0 0 28px rgba(201,168,76,0.18)}
+.plan-badge{position:absolute;top:0;right:14px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;font-weight:700;padding:3px 10px;border-radius:0 0 6px 6px}
+.plan-badge.gold{background:linear-gradient(135deg,var(--gold-light),var(--gold));color:var(--bg)}
+.plan-badge.purple{background:linear-gradient(135deg,#9b8fe8,#6a5fc1);color:#fff}
+.plan-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;padding-right:24px}
+.plan-name{font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;color:var(--text);font-weight:600}
+.plan-dur{font-size:12px;color:var(--text-dim);font-style:italic;margin-top:2px}
+.plan-price-col{text-align:right;flex-shrink:0}
+.plan-price{font-family:'Cinzel',serif;font-size:24px;font-weight:700;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.plan-per{font-size:10px;color:var(--text-dim);font-style:italic;margin-top:2px}
+.plan-save{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1px;color:#7ec87e;text-transform:uppercase}
+.plan-old{font-size:10px;color:var(--text-muted);text-decoration:line-through}
+.plan-div{height:1px;background:rgba(201,168,76,0.09);margin:10px 0}
+.plan-feats{display:flex;flex-wrap:wrap;gap:5px 14px}
+.plan-feat{font-size:11px;color:var(--text-dim);font-style:italic;display:flex;align-items:center;gap:4px}
+.plan-feat::before{content:'✦';color:var(--gold);font-size:7px;flex-shrink:0}
+.plan-radio{position:absolute;top:18px;right:14px;width:15px;height:15px;border:2px solid rgba(201,168,76,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
+.plan.sel .plan-radio{border-color:var(--gold)}
+.plan-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:0;transition:opacity .2s}
+.plan.sel .plan-dot{opacity:1}
+.pricing-cta{padding:4px 16px 14px}
+.pricing-cta .btn-gold{width:100%;padding:17px;font-size:11px}
+.pricing-guarantee{text-align:center;padding:12px 24px 20px;font-size:12px;font-style:italic;color:var(--text-dim);line-height:1.5}
+.pricing-guarantee b{color:var(--gold-dim);font-style:normal}
+.pricing-links{display:flex;justify-content:center;gap:18px;padding-bottom:20px}
+.pricing-links button{background:none;border:none;color:var(--text-muted);font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+/* ── STATUS BAR ── */
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:9px 18px;background:rgba(201,168,76,0.04);border-bottom:1px solid rgba(201,168,76,0.09)}
+.sb-left .sb-plan{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
+.sb-left .sb-detail{color:var(--text-dim);font-style:italic;font-size:10px;margin-top:1px}
+.sb-upgrade{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--bg);background:linear-gradient(135deg,var(--gold-light),var(--gold));border:none;padding:6px 11px;border-radius:3px;cursor:pointer;text-transform:uppercase;font-weight:700}
+
+/* ── RESULTS ── */
+#screen-results{padding:0}
+.results-header{padding:36px 22px 22px;text-align:center;background:linear-gradient(180deg,rgba(201,168,76,0.05) 0%,transparent 100%);border-bottom:1px solid rgba(201,168,76,0.09)}
+.res-name{font-family:'Cinzel',serif;font-size:11px;letter-spacing:4px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:8px}
+.res-num{font-family:'Cinzel',serif;font-size:68px;font-weight:900;background:linear-gradient(160deg,var(--gold-pale),var(--gold),#7a5a1a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.res-path{font-size:17px;font-style:italic;color:var(--text-dim);margin-top:5px}
+.res-dob{font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--gold-dim);margin-top:7px}
+
+/* TABS */
+.tabs{display:flex;overflow-x:auto;padding:0 10px;gap:0;border-bottom:1px solid rgba(201,168,76,0.09);scrollbar-width:none;position:sticky;top:0;background:var(--bg);z-index:10}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:12px 11px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.5px;color:var(--text-muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;text-transform:uppercase;background:none;border-top:none;border-left:none;border-right:none}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.tab.locked{opacity:.35}
+.tab.locked::after{content:' 🔒';font-size:6px}
+.tab-panels{padding:24px 20px}
+.tab-panel{display:none;animation:fadeUp .4s ease}
+.tab-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.panel-icon{font-size:28px;margin-bottom:10px;display:block}
+.panel-title{font-family:'Cinzel',serif;font-size:15px;letter-spacing:2px;color:var(--gold-light);margin-bottom:4px}
+.panel-subtitle{font-size:13px;font-style:italic;color:var(--text-dim);margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid rgba(201,168,76,0.09)}
+.panel-content{font-size:16px;line-height:1.95;color:var(--text);font-weight:300;white-space:pre-wrap}
+.panel-content.loading{display:flex;flex-direction:column;align-items:center;gap:14px;padding:44px 0;color:var(--text-dim);font-style:italic;font-size:14px}
+.spinner{width:32px;height:32px;border:2px solid rgba(201,168,76,0.12);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err-msg{color:#e07070;font-style:italic;font-size:14px;text-align:center;padding:28px 0}
+.retry-btn{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--gold);background:none;border:1px solid rgba(201,168,76,0.3);padding:9px 20px;border-radius:4px;cursor:pointer;display:block;margin:14px auto 0;text-transform:uppercase;transition:all .2s}
+.retry-btn:hover{border-color:var(--gold);background:rgba(201,168,76,0.05)}
+
+/* LOCKED PANEL */
+.locked-panel{text-align:center;padding:36px 18px;background:rgba(6,6,15,0.5);border:1px solid rgba(201,168,76,0.09);border-radius:var(--radius)}
+.lock-icon{font-size:32px;margin-bottom:12px}
+.lock-title{font-family:'Cinzel',serif;font-size:14px;letter-spacing:2px;color:var(--gold-light);margin-bottom:8px}
+.lock-desc{font-size:14px;font-style:italic;color:var(--text-dim);line-height:1.7;margin-bottom:20px}
+.lock-desc b{color:var(--gold-dim);font-style:normal}
+.lock-btn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--bg);background:linear-gradient(135deg,var(--gold-light),var(--gold));border:none;padding:13px 26px;border-radius:4px;cursor:pointer;transition:all .3s;font-weight:700}
+.lock-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,168,76,0.4)}
+
+/* PLAN TIER BADGE on panels */
+.tier-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);border-radius:100px;padding:4px 12px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:12px}
+
+.results-footer{padding:0 20px 28px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
+/* ── SUCCESS ── */
+#screen-success{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;text-align:center}
+.success-icon{font-size:58px;margin-bottom:20px;animation:pop .5s ease}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.success-title{font-family:'Cinzel',serif;font-size:22px;letter-spacing:3px;color:var(--gold-light);margin-bottom:10px}
+.success-sub{font-size:16px;font-style:italic;color:var(--text-dim);line-height:1.7;max-width:280px;margin-bottom:28px}
+.success-card{background:linear-gradient(135deg,rgba(201,168,76,0.1),rgba(123,111,207,0.07));border:1px solid rgba(201,168,76,0.25);border-radius:12px;padding:18px 28px;margin-bottom:28px}
+.success-plan{font-family:'Cinzel',serif;font-size:16px;letter-spacing:3px;color:var(--gold)}
+.success-detail{font-size:13px;font-style:italic;color:var(--text-dim);margin-top:4px}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,0.18);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══════════ INTRO ══════════ -->
+<div id="screen-intro" class="screen active">
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:48px 24px;text-align:center">
+
+  <!-- LOGO -->
+  <div class="logo-wrap" style="margin-bottom:28px">
+    <svg class="logo-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#e8cc7a" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f0d878"/>
+          <stop offset="50%" stop-color="#c9a84c"/>
+          <stop offset="100%" stop-color="#7a5518"/>
+        </linearGradient>
+        <linearGradient id="goldGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#e8cc7a"/>
+          <stop offset="100%" stop-color="#9a6e20"/>
+        </linearGradient>
+      </defs>
+      <!-- Glow bg -->
+      <circle cx="60" cy="60" r="55" fill="url(#glow)"/>
+      <!-- Outer ring -->
+      <circle cx="60" cy="60" r="52" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
+      <circle cx="60" cy="60" r="46" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.35"/>
+      <!-- 8-point star of David style inner geometry -->
+      <polygon points="60,14 66,46 98,46 73,66 83,98 60,78 37,98 47,66 22,46 54,46" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.4"/>
+      <!-- Inner sacred geometry: overlapping triangles -->
+      <polygon points="60,22 90,72 30,72" fill="none" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.7"/>
+      <polygon points="60,98 90,48 30,48" fill="none" stroke="url(#goldGrad2)" stroke-width="1.2" opacity="0.7"/>
+      <!-- Center hexagon -->
+      <polygon points="60,44 72,51 72,65 60,72 48,65 48,51" fill="rgba(201,168,76,0.12)" stroke="url(#goldGrad)" stroke-width="1"/>
+      <!-- Center orb -->
+      <circle cx="60" cy="60" r="7" fill="url(#goldGrad)" opacity="0.9"/>
+      <circle cx="60" cy="60" r="4" fill="#f5e9c0" opacity="0.8"/>
+      <!-- 8 outer dots -->
+      <circle cx="60" cy="10" r="2.5" fill="url(#goldGrad)" opacity="0.8"/>
+      <circle cx="96" cy="28" r="2" fill="url(#goldGrad)" opacity="0.6"/>
+      <circle cx="108" cy="60" r="2.5" fill="url(#goldGrad)" opacity="0.8"/>
+      <circle cx="96" cy="92" r="2" fill="url(#goldGrad)" opacity="0.6"/>
+      <circle cx="60" cy="110" r="2.5" fill="url(#goldGrad)" opacity="0.8"/>
+      <circle cx="24" cy="92" r="2" fill="url(#goldGrad)" opacity="0.6"/>
+      <circle cx="12" cy="60" r="2.5" fill="url(#goldGrad)" opacity="0.8"/>
+      <circle cx="24" cy="28" r="2" fill="url(#goldGrad)" opacity="0.6"/>
+      <!-- Connecting lines from center to outer dots (faint) -->
+      <line x1="60" y1="53" x2="60" y2="12" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.3"/>
+      <line x1="60" y1="67" x2="60" y2="108" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.3"/>
+      <line x1="53" y1="57" x2="14" y2="60" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.3"/>
+      <line x1="67" y1="63" x2="106" y2="60" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.3"/>
+    </svg>
+    <div class="logo-wordmark">NUMERIS</div>
+    <div class="logo-tagline">decode your cosmic blueprint</div>
+  </div>
+
+  <div class="gold-line"></div>
+  <p class="intro-text">The universe encoded your destiny into the exact moment you arrived.<br><br>Your date of birth holds a complete map — your purpose, gifts, love, wealth, and future.</p>
+  <div class="free-pill">✦ &nbsp;3 Readings Free · No Card Required</div>
+  <button class="btn-gold" onclick="showScreen('input')" style="width:100%;max-width:280px;padding:17px">Begin Your Free Reading</button>
+  <br><br>
+  <button class="btn-outline" onclick="openPricing()">View All Plans</button>
+</div>
+</div>
+
+<!-- ══════════ INPUT ══════════ -->
+<div id="screen-input" class="screen">
+<div style="padding:56px 22px 40px">
+  <button class="back-btn" onclick="showScreen('intro')">← Return</button>
+  <div class="section-title">Your Birth Details</div>
+  <div class="section-sub">Enter your date of birth to reveal your Life Path Number and unlock your cosmic blueprint.</div>
+  <div style="margin-bottom:24px">
+    <label class="input-label">Date of Birth</label>
+    <div class="input-row">
+      <div><input type="number" id="inp-d" placeholder="DD" min="1" max="31" oninput="dobChange()"><div class="input-hint">Day</div></div>
+      <div><input type="number" id="inp-m" placeholder="MM" min="1" max="12" oninput="dobChange()"><div class="input-hint">Month</div></div>
+      <div><input type="number" id="inp-y" placeholder="YYYY" min="1900" max="2025" oninput="dobChange()"><div class="input-hint">Year</div></div>
+    </div>
+  </div>
+  <div style="margin-bottom:24px">
+    <label class="input-label">Your Name (optional)</label>
+    <input type="text" id="inp-n" placeholder="Enter your name...">
+  </div>
+  <div class="lp-preview" id="lp-prev">
+    <div class="lp-label">Your Life Path Number</div>
+    <div class="lp-num" id="lp-num">—</div>
+    <div class="lp-name" id="lp-nm"></div>
+  </div>
+  <button class="btn-gold" id="gen-btn" style="width:100%;padding:17px" onclick="startReading()" disabled>Reveal My Blueprint</button>
+  <p style="text-align:center;margin-top:14px;font-size:12px;font-style:italic;color:var(--text-muted)">✦ First 3 readings free — upgrade anytime ✦</p>
+</div>
+</div>
+
+<!-- ══════════ PRICING ══════════ -->
+<div id="screen-pricing" class="screen">
+  <div class="pricing-hero">
+    <div style="text-align:left"><button class="back-btn" style="margin-bottom:18px" onclick="goBackFromPricing()">← Return</button></div>
+
+    <!-- Mini logo on pricing -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px">
+      <svg width="28" height="28" viewBox="0 0 120 120" fill="none"><defs><linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f0d878"/><stop offset="100%" stop-color="#7a5518"/></linearGradient></defs><polygon points="60,22 90,72 30,72" fill="none" stroke="url(#g2)" stroke-width="2"/><polygon points="60,98 90,48 30,48" fill="none" stroke="url(#g2)" stroke-width="2" opacity=".8"/><circle cx="60" cy="60" r="7" fill="url(#g2)"/></svg>
+      <span style="font-family:'Cinzel',serif;font-size:16px;font-weight:700;letter-spacing:5px;background:linear-gradient(135deg,#e8cc7a,#c9a84c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">NUMERIS</span>
+    </div>
+
+    <div class="trial-banner" id="trial-banner">✦ &nbsp;Your free trial has been used</div>
+    <div class="pricing-title">Unlock Your Full Destiny</div>
+    <div class="gold-line"></div>
+    <p class="pricing-sub">Choose the plan that matches your journey. Cancel anytime.</p>
+  </div>
+
+  <div class="plans">
+
+    <!-- FREE -->
+    <div class="plan" id="plan-free" onclick="selPlan('free')">
+      <div class="plan-top">
+        <div><div class="plan-name">Free Trial</div><div class="plan-dur">30 Days</div></div>
+        <div class="plan-price-col"><div class="plan-price">$0</div><div class="plan-per">no card needed</div></div>
+      </div>
+      <div class="plan-div"></div>
+      <div class="plan-feats">
+        <div class="plan-feat">3 readings included</div>
+        <div class="plan-feat">Blueprint · Soul · Career</div>
+        <div class="plan-feat">Life path number</div>
+      </div>
+      <div class="plan-radio"><div class="plan-dot"></div></div>
+    </div>
+
+    <!-- ANNUAL -->
+    <div class="plan" id="plan-year" onclick="selPlan('year')">
+      <div class="plan-top" style="padding-top:6px">
+        <div><div class="plan-name">Annual</div><div class="plan-dur">12 Months</div></div>
+        <div class="plan-price-col"><div class="plan-price">$47</div><div class="plan-per">per year · $3.92/mo</div><div class="plan-save">Save 67%</div></div>
+      </div>
+      <div class="plan-div"></div>
+      <div class="plan-feats">
+        <div class="plan-feat">5 readings</div>
+        <div class="plan-feat">+ Love & Wealth</div>
+        <div class="plan-feat">Monthly updates</div>
+        <div class="plan-feat">Priority support</div>
+      </div>
+      <div class="plan-radio"><div class="plan-dot"></div></div>
+    </div>
+
+    <!-- 5-YEAR FEATURED -->
+    <div class="plan hot" id="plan-5year" onclick="selPlan('5year')">
+      <div class="plan-badge gold">Most Popular</div>
+      <div class="plan-top" style="padding-top:14px">
+        <div><div class="plan-name">5-Year Journey</div><div class="plan-dur">60 Months · One-Time</div></div>
+        <div class="plan-price-col"><div class="plan-price">$97</div><div class="plan-per">one-time · $1.62/mo</div><div class="plan-old">Worth $564</div><div class="plan-save">Save 83%</div></div>
+      </div>
+      <div class="plan-div"></div>
+      <div class="plan-feats">
+        <div class="plan-feat">All 7 core readings</div>
+        <div class="plan-feat">Life phase roadmap</div>
+        <div class="plan-feat">Visual timeline</div>
+        <div class="plan-feat">Multi-layer overlay map</div>
+        <div class="plan-feat">Soul-purpose roadmap</div>
+        <div class="plan-feat">11 readings total</div>
+      </div>
+      <div class="plan-radio"><div class="plan-dot"></div></div>
+    </div>
+
+    <!-- LIFETIME -->
+    <div class="plan" id="plan-lifetime" onclick="selPlan('lifetime')">
+      <div class="plan-badge purple">Lifetime</div>
+      <div class="plan-top" style="padding-top:14px">
+        <div><div class="plan-name">Eternal Access</div><div class="plan-dur">Forever · Pay Once</div></div>
+        <div class="plan-price-col"><div class="plan-price">$147</div><div class="plan-per">one-time forever</div><div class="plan-old">Worth $1,000+</div><div class="plan-save">Save 85%+</div></div>
+      </div>
+      <div class="plan-div"></div>
+      <div class="plan-feats">
+        <div class="plan-feat">Everything in 5-Year</div>
+        <div class="plan-feat">9-year personal year map</div>
+        <div class="plan-feat">Full life visual timeline</div>
+        <div class="plan-feat">Wealth blueprint</div>
+        <div class="plan-feat">Color-coded life map</div>
+        <div class="plan-feat">Annual personal year report</div>
+        <div class="plan-feat">16 readings total</div>
+        <div class="plan-feat">All future features</div>
+      </div>
+      <div class="plan-radio"><div class="plan-dot"></div></div>
+    </div>
+
+  </div>
+
+  <div class="pricing-cta">
+    <button class="btn-gold" id="cta-btn" onclick="purchasePlan()">Start Free Trial</button>
+  </div>
+  <p class="pricing-guarantee"><b>30-Day Money-Back Guarantee.</b><br>Not satisfied? Full refund, no questions asked.</p>
+  <div class="pricing-links">
+    <button onclick="showScreen('intro')">Terms</button>
+    <button onclick="showScreen('intro')">Privacy</button>
+    <button onclick="showScreen('intro')">Restore Purchase</button>
+  </div>
+</div>
+
+<!-- ══════════ SUCCESS ══════════ -->
+<div id="screen-success" class="screen">
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;text-align:center">
+  <div class="success-icon">🌟</div>
+  <div class="success-title">You're Unlocked</div>
+  <p class="success-sub">Your cosmic blueprint is now fully open. The stars have been waiting for you.</p>
+  <div class="success-card">
+    <div class="success-plan" id="suc-plan"></div>
+    <div class="success-detail" id="suc-detail"></div>
+  </div>
+  <button class="btn-gold" onclick="goToReading()">Open My Blueprint</button>
+</div>
+</div>
+
+<!-- ══════════ RESULTS ══════════ -->
+<div id="screen-results" class="screen">
+
+  <div class="status-bar">
+    <div class="sb-left"><div class="sb-plan" id="sb-plan">Free Trial</div><div class="sb-detail" id="sb-detail">3 readings unlocked</div></div>
+    <button class="sb-upgrade" id="sb-up" onclick="openPricing()" style="display:none">Upgrade ✦</button>
+  </div>
+
+  <div class="results-header">
+    <div class="res-name" id="res-name"></div>
+    <div class="res-num" id="res-num"></div>
+    <div class="res-path" id="res-path"></div>
+    <div class="res-dob" id="res-dob"></div>
+  </div>
+
+  <!-- TABS — dynamically populated -->
+  <div class="tabs" id="tabs-row"></div>
+
+  <div class="tab-panels" id="panels-wrap"></div>
+
+  <div class="results-footer">
+    <button class="btn-outline" onclick="resetApp()">New Reading</button>
+    <button class="btn-outline" id="up-footer" onclick="openPricing()" style="display:none">Upgrade Plan ✦</button>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+/* ══════════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════════ */
+const LP_NAMES={1:"The Leader",2:"The Diplomat",3:"The Creator",4:"The Builder",5:"The Freedom Seeker",6:"The Nurturer",7:"The Mystic",8:"The Powerhouse",9:"The Humanitarian",11:"The Illuminator",22:"The Master Builder",33:"The Master Teacher"};
+
+const PLANS={
+  free:    {name:"Free Trial",    detail:"3 readings · Blueprint, Soul & Career",           cta:"Start Free Trial"},
+  year:    {name:"Annual Plan",   detail:"5 readings · Blueprint, Soul, Career, Love & Wealth", cta:"Get Annual Access — $47/yr"},
+  '5year': {name:"5-Year Journey",detail:"11 readings · All 7 core + 4 roadmap readings",   cta:"Get 5-Year Access — $97"},
+  lifetime:{name:"Eternal Access",detail:"16 readings · Complete life blueprint forever",    cta:"Get Lifetime Access — $147"}
+};
+
+/* Reading definitions — each has: id, icon, title, subtitle, tier, prompt fn */
+const READINGS=[
+  /* ── CORE 7 (all plans) ── */
+  {id:'blueprint', icon:'🌌', title:'Life Blueprint Decoder',    sub:'Your personality, hidden strengths & destiny blueprint',
+   tier:'free',
+   prompt:(d,n)=>`I want you to act as a life-path decoder. My date of birth is ${d}${n?` and my name is ${n}`:``}. Analyze it using psychology, numerology logic, and life-pattern mapping to uncover my deepest personality traits, hidden strengths, weaknesses, and destiny blueprint. Deliver a brutally honest analysis that feels like you've known me forever, and highlight the single biggest purpose I'm meant to pursue in this lifetime.`},
+  {id:'soul',      icon:'✨', title:'Soul Purpose Finder',        sub:'Your core mission, lessons & contribution to the world',
+   tier:'free',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, act as my soul-purpose guide. Reveal the core mission of my life, the lessons I am meant to learn, and the contribution I am destined to make to the world. Don't just describe — give me clear, actionable advice on how to align my daily life with this soul purpose starting today.`},
+  {id:'career',    icon:'💼', title:'Career Destiny Finder',      sub:'Your destined paths to extraordinary success',
+   tier:'free',
+   prompt:(d,n)=>`You are my future career mentor. Using my date of birth ${d}${n?` (my name is ${n})`:``}, analyze my natural talents, decision-making style, and hidden drives. Then reveal the 3 career or business paths where I am destined to achieve extraordinary success, along with the one field I should absolutely avoid at all costs.`},
+  {id:'love',      icon:'💞', title:'Relationship Destiny Map',   sub:'Your love lessons & perfect partner blueprint',
+   tier:'year',
+   prompt:(d,n)=>`I will give you my date of birth ${d}${n?` (my name is ${n})`:``}. Based on it, uncover the type of people I am most compatible with, the love lessons I must learn, and the role relationships play in my life journey. Provide me with an exact description of the kind of partner who will help me grow into my highest self.`},
+  {id:'wealth',    icon:'💰', title:'Wealth & Abundance Code',    sub:'Your unique path to financial abundance',
+   tier:'year',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, decode the exact way I am meant to attract wealth, opportunities, and abundance in life. Reveal my natural money personality, the mistakes that block my financial growth, and the wealth-building strategy that fits my true self — not generic advice.`},
+  {id:'timeline',  icon:'🗺️', title:'Future Timeline Guide',      sub:'Your past, present & 5-year roadmap ahead',
+   tier:'5year',
+   prompt:(d,n)=>`I want you to use my date of birth ${d}${n?` (my name is ${n})`:``} as a time map. Show me the key turning points in my life journey (past, present, and future), the phases of growth and struggle, and the exact 5-year path I am meant to follow. Write it like a roadmap so I can clearly see where I am heading.`},
+  {id:'genius',    icon:'🔓', title:'Inner Genius Unlocker',      sub:'Your unique gift & 3-step mastery routine',
+   tier:'5year',
+   prompt:(d,n)=>`You are my inner genius mentor. Based on my date of birth ${d}${n?` (my name is ${n})`:``}, identify the unique talent or skill that sets me apart from 99% of people. Then give me a practical 3-step daily routine I can follow to unlock this genius and turn it into mastery and recognition in my lifetime.`},
+
+  /* ── 5-YEAR EXCLUSIVE (4 extra) ── */
+  {id:'phases',    icon:'📅', title:'Life Phase Age Map',         sub:'Exact ages & 5-year turning points on your life path',
+   tier:'5year',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, map the exact ages and 5-year phases in my life, showing when the key turning points, breakthroughs, and life-purpose moments are likely to occur. Create a literal roadmap based on my Life Path number. Be specific with ages, label each phase clearly, and describe what I should be doing or expecting during each one.`},
+  {id:'roadmap',   icon:'🧭', title:'5-Year Cycle Roadmap',       sub:'Visual timeline of cycles, turning points & purpose milestones',
+   tier:'5year',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a visual "timeline roadmap" with all key 5-year cycles, turning points, and purpose milestones so I can see my life unfold like a strategic map. Format it clearly with phases, ages, labels, and what each cycle means for my growth. Make it feel like a real strategic life plan.`},
+  {id:'overlay',   icon:'🌈', title:'Multi-Layer Life Overlay',   sub:'Romantic, financial & spiritual milestones on your 5-year cycles',
+   tier:'5year',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a next-level version of my life roadmap, where you clearly mark: Romantic turning points 💞, Financial/career breakthroughs 💰, and Spiritual growth milestones ✨ — all overlaid on my 5-year cycles, so I can see when each life area is "active" for maximum alignment. Use symbols and labels to make it visually clear.`},
+  {id:'soulmap',   icon:'⭐', title:'Soul-Purpose Roadmap',        sub:'Breakthroughs, relationships, career & spiritual awakenings aligned',
+   tier:'5year',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a personalized 5-year soul-purpose roadmap, showing when major breakthroughs, relationships, career milestones, and spiritual awakenings will occur, perfectly aligned with my Life Path number. Write it as a detailed, inspiring roadmap that shows me exactly where I'm headed and when.`},
+
+  /* ── LIFETIME EXCLUSIVE (5 extra) ── */
+  {id:'yr9',       icon:'🔮', title:'9-Year Personal Year Cycle', sub:'Full 9-year map of love, career & spiritual growth by year',
+   tier:'lifetime',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, map out my full 9-year Personal Year cycle, showing the exact focus areas for love, career, and spiritual growth for each of the 9 years, perfectly aligned with my Life Path number. Label each Personal Year (1–9), explain what it means, and give me specific actions I should take during each one.`},
+  {id:'masterviz', icon:'🌐', title:'Complete Life Vision Map',    sub:'9-year cycle + life roadmap + all turning points unified',
+   tier:'lifetime',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, combine my full 9-year Personal Year cycle with my earlier life roadmap and romantic, career, and spiritual turning points into a single, unified visual timeline, so I can see my entire life and growth blueprint at a glance. Format it clearly with years, phases, and category labels.`},
+  {id:'wealthblue',icon:'💎', title:'Wealth & Abundance Blueprint',sub:'Financial opportunities, life milestones & abundance peak years',
+   tier:'lifetime',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a full "Wealth & Abundance Blueprint" timeline, overlaying financial opportunities, life-purpose milestones, and personal year cycles so I can see the exact years where money, career, and abundance peak naturally. Give me specific years, what to focus on, and how to capitalize on each peak.`},
+  {id:'colormap',  icon:'🎨', title:'Color-Coded Life Blueprint',  sub:'Love, career, spirit & purpose mapped across your entire life 0–70+',
+   tier:'lifetime',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a color-coded visual timeline diagram showing: Love milestones (💞 red), Career/wealth breakthroughs (💰 green), Spiritual growth (✨ blue), and Life-purpose milestones (⭐ gold) — across my life from ages 0 to 70+, so I can see my entire life blueprint at a glance. Be specific with ages and label each key moment clearly.`},
+  {id:'yearreport',icon:'📆', title:'Personal Year Report',        sub:`Your focused roadmap for ${new Date().getFullYear()} — what to prioritize this year`,
+   tier:'lifetime',
+   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, generate my personalized Personal Year Report for ${new Date().getFullYear()}. Calculate my Personal Year number for this year and provide a detailed, actionable roadmap covering: the theme and energy of this year, key opportunities in love, career, finances, and spiritual growth, important months to watch, what to focus on, what to avoid, and specific actions I should take to make the most of this personal year cycle.`}
+];
+
+/* Which reading IDs each plan unlocks */
+const PLAN_ACCESS={
+  free:    ['blueprint','soul','career'],
+  year:    ['blueprint','soul','career','love','wealth'],
+  '5year': ['blueprint','soul','career','love','wealth','timeline','genius','phases','roadmap','overlay','soulmap'],
+  lifetime:['blueprint','soul','career','love','wealth','timeline','genius','phases','roadmap','overlay','soulmap','yr9','masterviz','wealthblue','colormap','yearreport']
+};
+
+const PLAN_TIER_ORDER=['free','year','5year','lifetime'];
+const TIER_LABELS={free:'Free',year:'Annual',['5year']:'5-Year','lifetime':'Lifetime'};
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let S={plan:'free',trialUsed:false,selPlanId:'5year',dob:'',name:'',lp:0};
+
+/* ══════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════ */
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');window.scrollTo(0,0)}
+function reduceSD(n){if(n===11||n===22||n===33)return n;if(n<10)return n;return reduceSD(String(n).split('').reduce((a,b)=>a+parseInt(b),0))}
+function calcLP(d,m,y){return reduceSD(reduceSD(d)+reduceSD(m)+reduceSD(String(y).split('').reduce((a,b)=>a+parseInt(b),0)))}
+function fmtDOB(d,m,y){return `${d} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]} ${y}`}
+
+/* ══════════════════════════════════════════
+   DOB INPUT
+══════════════════════════════════════════ */
+function dobChange(){
+  const d=parseInt(document.getElementById('inp-d').value),
+        m=parseInt(document.getElementById('inp-m').value),
+        y=parseInt(document.getElementById('inp-y').value);
+  const ok=d>=1&&d<=31&&m>=1&&m<=12&&y>=1900&&y<=2025;
+  document.getElementById('gen-btn').disabled=!ok;
+  if(ok){const lp=calcLP(d,m,y);document.getElementById('lp-num').textContent=lp;document.getElementById('lp-nm').textContent=LP_NAMES[lp]||'';document.getElementById('lp-prev').classList.add('visible');}
+  else document.getElementById('lp-prev').classList.remove('visible');
+}
+
+/* ══════════════════════════════════════════
+   PLAN SELECTION
+══════════════════════════════════════════ */
+function selPlan(id){
+  S.selPlanId=id;
+  document.querySelectorAll('.plan').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('plan-'+id).classList.add('sel');
+  document.getElementById('cta-btn').textContent=PLANS[id].cta;
+}
+function openPricing(){
+  document.getElementById('trial-banner').classList.toggle('show',S.trialUsed);
+  selPlan(S.trialUsed&&S.selPlanId==='free'?'5year':S.selPlanId);
+  showScreen('pricing');
+}
+function goBackFromPricing(){S.dob?showScreen('results'):showScreen('intro')}
+
+/* ══════════════════════════════════════════
+   PURCHASE
+══════════════════════════════════════════ */
+function purchasePlan(){
+  const p=S.selPlanId;
+  if(p==='free'){
+    if(S.trialUsed){alert('Your free trial has already been used. Please choose a paid plan to continue.');return;}
+    S.plan='free';S.trialUsed=true;
+    S.dob?goToReading():showScreen('input');
+    return;
+  }
+  S.plan=p;
+  document.getElementById('suc-plan').textContent=PLANS[p].name;
+  document.getElementById('suc-detail').textContent=PLANS[p].detail;
+  showScreen('success');
+}
+function goToReading(){if(!S.dob){showScreen('input');return;}buildResultsUI();showScreen('results')}
+
+/* ══════════════════════════════════════════
+   START READING
+══════════════════════════════════════════ */
+function startReading(){
+  const d=parseInt(document.getElementById('inp-d').value),
+        m=parseInt(document.getElementById('inp-m').value),
+        y=parseInt(document.getElementById('inp-y').value),
+        n=document.getElementById('inp-n').value.trim();
+  S.dob=fmtDOB(d,m,y);S.name=n;S.lp=calcLP(d,m,y);
+  if(S.plan==='free')S.trialUsed=true;
+  buildResultsUI();
+  showScreen('results');
+  loadPanels();
+}
+
+/* ══════════════════════════════════════════
+   BUILD RESULTS UI (tabs + panels dynamic)
+══════════════════════════════════════════ */
+function buildResultsUI(){
+  document.getElementById('res-name').textContent=S.name?S.name.toUpperCase():'YOUR READING';
+  document.getElementById('res-num').textContent=S.lp;
+  document.getElementById('res-path').textContent=LP_NAMES[S.lp]||'';
+  document.getElementById('res-dob').textContent=S.dob;
+
+  const access=PLAN_ACCESS[S.plan];
+  const allMax=access.length===READINGS.length;
+  document.getElementById('sb-plan').textContent=PLANS[S.plan].name;
+  document.getElementById('sb-detail').textContent=allMax?PLANS[S.plan].detail:`${access.length} readings unlocked`;
+  document.getElementById('sb-up').style.display=allMax?'none':'block';
+  document.getElementById('up-footer').style.display=allMax?'none':'block';
+
+  // Build tabs
+  const tabsRow=document.getElementById('tabs-row');
+  tabsRow.innerHTML='';
+  READINGS.forEach((r,i)=>{
+    const locked=!access.includes(r.id);
+    const btn=document.createElement('button');
+    btn.className='tab'+(i===0?' active':'')+(locked?' locked':'');
+    btn.textContent=r.title.split(' ').slice(0,1).join(' '); // Short tab label
+    btn.onclick=()=>switchTab(i);
+    tabsRow.appendChild(btn);
+  });
+
+  // Build panels
+  const wrap=document.getElementById('panels-wrap');
+  wrap.innerHTML='';
+  READINGS.forEach((r,i)=>{
+    const locked=!access.includes(r.id);
+    const div=document.createElement('div');
+    div.className='tab-panel'+(i===0?' active':'');
+    div.id='panel-'+i;
+
+    // Tier badge
+    const tierLabel=TIER_LABELS[r.tier];
+    const tierColor=r.tier==='free'?'rgba(90,170,90,0.15)':r.tier==='year'?'rgba(106,170,207,0.15)':r.tier==='5year'?'rgba(201,168,76,0.12)':'rgba(155,143,232,0.15)';
+    const tierTextColor=r.tier==='free'?'#7ec87e':r.tier==='year'?'#6aaacf':r.tier==='5year'?'var(--gold)':'#9b8fe8';
+
+    div.innerHTML=`
+      <div style="display:inline-flex;align-items:center;gap:5px;background:${tierColor};border:1px solid ${tierTextColor}33;border-radius:100px;padding:3px 10px;margin-bottom:10px">
+        <span style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;color:${tierTextColor};text-transform:uppercase">${tierLabel} Plan</span>
+      </div>
+      <span class="panel-icon">${r.icon}</span>
+      <div class="panel-title">${r.title}</div>
+      <div class="panel-subtitle">${r.sub}</div>
+      <div class="panel-content${locked?'':' loading'}" id="content-${i}">
+        ${locked
+          ? lockHTML(r)
+          : `<div class="spinner"></div><span>Loading your reading...</span>`
+        }
+      </div>`;
+    wrap.appendChild(div);
+  });
+}
+
+function lockHTML(r){
+  const needPlan=r.tier==='year'?'Annual':r.tier==='5year'?'5-Year Journey':'Eternal Access';
+  const needPrice=r.tier==='year'?'$47/yr':r.tier==='5year'?'$97':'$147';
+  return `<div class="locked-panel">
+    <div class="lock-icon">🔮</div>
+    <div class="lock-title">${r.title} is Locked</div>
+    <p class="lock-desc">This reading is included in the <b>${needPlan}</b> plan (${needPrice}).<br>Upgrade to unlock this and all higher-tier readings.</p>
+    <button class="lock-btn" onclick="openPricing()">Unlock This Reading ✦</button>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════
+   LOAD PANELS (AI calls)
+══════════════════════════════════════════ */
+function loadPanels(){
+  const access=PLAN_ACCESS[S.plan];
+  READINGS.forEach(async(r,i)=>{
+    if(!access.includes(r.id))return;
+    try{
+      const txt=await callClaude(r.prompt(S.dob,S.name));
+      const el=document.getElementById('content-'+i);
+      el.className='panel-content';el.textContent=txt;
+    }catch(e){
+      const el=document.getElementById('content-'+i);
+      el.className='panel-content';
+      el.innerHTML=`<div class="err-msg">Unable to load this reading.<br><small>${e.message}</small></div><button class="retry-btn" onclick="retryPanel(${i})">Retry</button>`;
+    }
+  });
+}
+
+async function retryPanel(i){
+  const r=READINGS[i];
+  const el=document.getElementById('content-'+i);
+  el.className='panel-content loading';el.innerHTML='<div class="spinner"></div><span>Loading your reading...</span>';
+  try{const t=await callClaude(r.prompt(S.dob,S.name));el.className='panel-content';el.textContent=t;}
+  catch(e){el.className='panel-content';el.innerHTML=`<div class="err-msg">Unable to load this reading.<br><small>${e.message}</small></div><button class="retry-btn" onclick="retryPanel(${i})">Retry</button>`;}
+}
+
+async function callClaude(prompt){
+  const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:prompt}]})});
+  const d=await r.json();
+  if(d.error)throw new Error(d.error.message);
+  return d.content.map(b=>b.text||'').join('');
+}
+
+/* ══════════════════════════════════════════
+   TAB SWITCHING
+══════════════════════════════════════════ */
+function switchTab(idx){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tab-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+}
+
+/* ══════════════════════════════════════════
+   RESET
+══════════════════════════════════════════ */
+function resetApp(){
+  ['inp-d','inp-m','inp-y','inp-n'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('lp-prev').classList.remove('visible');
+  document.getElementById('gen-btn').disabled=true;
+  S.dob='';S.name='';S.lp=0;
+  showScreen('intro');
+}
+
+/* Init */
+selPlan('5year');
+
+/* ══════════════════════════════════════════
+   PWA — MANIFEST (injected inline)
+══════════════════════════════════════════ */
+(function(){
+  const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#06060f"/><circle cx="256" cy="256" r="220" fill="none" stroke="#c9a84c" stroke-width="3" opacity=".4"/><circle cx="256" cy="256" r="180" fill="none" stroke="#c9a84c" stroke-width="2" opacity=".3"/><polygon points="256,90 346,290 166,290" fill="none" stroke="#e8cc7a" stroke-width="5"/><polygon points="256,422 346,222 166,222" fill="none" stroke="#c9a84c" stroke-width="5" opacity=".8"/><circle cx="256" cy="256" r="30" fill="#c9a84c" opacity=".9"/><circle cx="256" cy="256" r="16" fill="#f5e9c0"/><circle cx="256" cy="70" r="10" fill="#c9a84c"/><circle cx="256" cy="442" r="10" fill="#c9a84c"/><circle cx="70" cy="256" r="10" fill="#c9a84c"/><circle cx="442" cy="256" r="10" fill="#c9a84c"/></svg>`;
+  const iconUrl = 'data:image/svg+xml;base64,' + btoa(iconSvg);
+
+  const manifest = {
+    name: 'Numeris — Your Life Blueprint',
+    short_name: 'Numeris',
+    description: 'Decode your cosmic blueprint with numerology.',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#06060f',
+    theme_color: '#06060f',
+    orientation: 'portrait',
+    categories: ['lifestyle', 'health'],
+    icons: [
+      { src: iconUrl, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+      { src: iconUrl, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+    ],
+    shortcuts: [
+      { name: 'New Reading', short_name: 'Reading', description: 'Start a new numerology reading', url: '/' }
+    ]
+  };
+
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  document.getElementById('pwa-manifest').setAttribute('href', url);
+})();
+
+/* ══════════════════════════════════════════
+   PWA — SERVICE WORKER
+══════════════════════════════════════════ */
+if('serviceWorker' in navigator){
+  const swCode = `
+const CACHE = 'numeris-v1';
+const ASSETS = ['/'];
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch', e => {
+  if(e.request.method !== 'GET') return;
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request).then(r => r || caches.match('/'))));
+});
+`;
+  const swBlob = new Blob([swCode], {type:'application/javascript'});
+  const swUrl  = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl, {scope:'/'}).catch(()=>{});
+}
+
+/* ══════════════════════════════════════════
+   PWA — INSTALL PROMPT BANNER
+══════════════════════════════════════════ */
+let deferredPrompt = null;
+
+// Inject install banner HTML
+const banner = document.createElement('div');
+banner.id = 'install-banner';
+banner.innerHTML = `
+  <div style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;
+    width:calc(100% - 32px);max-width:398px;
+    background:linear-gradient(135deg,#0d0d1c,#12122a);
+    border:1px solid rgba(201,168,76,0.35);border-radius:14px;
+    padding:16px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.6);
+    display:none;align-items:center;gap:14px;" id="install-inner">
+    <svg width="36" height="36" viewBox="0 0 512 512" style="flex-shrink:0;border-radius:8px">
+      <rect width="512" height="512" rx="112" fill="#06060f"/>
+      <polygon points="256,90 346,290 166,290" fill="none" stroke="#e8cc7a" stroke-width="20"/>
+      <polygon points="256,422 346,222 166,222" fill="none" stroke="#c9a84c" stroke-width="20" opacity=".8"/>
+      <circle cx="256" cy="256" r="30" fill="#c9a84c"/>
+      <circle cx="256" cy="256" r="16" fill="#f5e9c0"/>
+    </svg>
+    <div style="flex:1;min-width:0">
+      <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:600;letter-spacing:2px;color:#e8cc7a">Install Numeris</div>
+      <div style="font-size:12px;font-style:italic;color:#8a7e6a;margin-top:2px">Add to your home screen for the full app experience</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+      <button onclick="installApp()" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#06060f;background:linear-gradient(135deg,#e8cc7a,#c9a84c);border:none;padding:7px 14px;border-radius:4px;cursor:pointer;font-weight:700">Install</button>
+      <button onclick="dismissInstall()" style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#6b5420;background:none;border:1px solid rgba(201,168,76,0.2);padding:6px 14px;border-radius:4px;cursor:pointer">Later</button>
+    </div>
+  </div>`;
+document.body.appendChild(banner);
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const inner = document.getElementById('install-inner');
+  if(inner) inner.style.display = 'flex';
+});
+
+window.installApp = async function(){
+  const inner = document.getElementById('install-inner');
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const {outcome} = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  }
+  if(inner) inner.style.display = 'none';
+};
+
+window.dismissInstall = function(){
+  const inner = document.getElementById('install-inner');
+  if(inner) inner.style.display = 'none';
+};
+
+// iOS — show manual install instructions
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+const isStandalone = window.navigator.standalone;
+if(isIOS && !isStandalone){
+  setTimeout(()=>{
+    const iosBanner = document.createElement('div');
+    iosBanner.innerHTML = `
+      <div id="ios-install" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;
+        width:calc(100% - 32px);max-width:398px;
+        background:linear-gradient(135deg,#0d0d1c,#12122a);
+        border:1px solid rgba(201,168,76,0.35);border-radius:14px;
+        padding:16px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.6);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-family:'Cinzel',serif;font-size:12px;font-weight:600;letter-spacing:2px;color:#e8cc7a">Install Numeris on iPhone</div>
+          <button onclick="document.getElementById('ios-install').remove()" style="background:none;border:none;color:#6b5420;font-size:18px;cursor:pointer;line-height:1">×</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="text-align:center;flex:1">
+            <div style="font-size:22px">⬆️</div>
+            <div style="font-size:11px;color:#8a7e6a;font-style:italic;margin-top:4px">Tap Share</div>
+          </div>
+          <div style="color:#6b5420;font-size:18px">→</div>
+          <div style="text-align:center;flex:1">
+            <div style="font-size:22px">➕</div>
+            <div style="font-size:11px;color:#8a7e6a;font-style:italic;margin-top:4px">Add to Home</div>
+          </div>
+          <div style="color:#6b5420;font-size:18px">→</div>
+          <div style="text-align:center;flex:1">
+            <div style="font-size:22px">✅</div>
+            <div style="font-size:11px;color:#8a7e6a;font-style:italic;margin-top:4px">Done!</div>
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(iosBanner);
+    setTimeout(()=>{ const el=document.getElementById('ios-install'); if(el)el.remove(); }, 12000);
+  }, 3000);
+}
+
+window.addEventListener('appinstalled', () => {
+  const inner = document.getElementById('install-inner');
+  if(inner) inner.style.display = 'none';
+  deferredPrompt = null;
+});
+</script>
+</body>
+</html>
