@@ -568,12 +568,23 @@ function goBackFromPricing(){S.dob?showScreen('results'):showScreen('intro')}
 /* ══════════════════════════════════════════
    PURCHASE
 ══════════════════════════════════════════ */
+const STRIPE_LINKS={
+  year:    'https://buy.stripe.com/7sY00j0Ti939cjCenp1B601',
+  '5year': 'https://buy.stripe.com/dRm7sL45u2ELcjC1AD1B600',
+  lifetime:'https://buy.stripe.com/fZudR9cC0djperK1AD1B602'
+};
+
 function purchasePlan(){
   const p=S.selPlanId;
   if(p==='free'){
     if(S.trialUsed){alert('Your free trial has already been used. Please choose a paid plan to continue.');return;}
     S.plan='free';S.trialUsed=true;
     S.dob?goToReading():showScreen('input');
+    return;
+  }
+  // Redirect to Stripe payment page
+  if(STRIPE_LINKS[p]){
+    window.location.href=STRIPE_LINKS[p];
     return;
   }
   S.plan=p;
@@ -723,6 +734,32 @@ function resetApp(){
 
 /* Init */
 selPlan('5year');
+
+/* ══════════════════════════════════════════
+   STRIPE RETURN HANDLER
+   After payment, Stripe redirects back with
+   ?plan=year / ?plan=5year / ?plan=lifetime
+══════════════════════════════════════════ */
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const returnPlan = params.get('plan');
+  if(returnPlan && PLANS[returnPlan]){
+    S.plan = returnPlan;
+    // Store in sessionStorage so readings stay unlocked on refresh
+    sessionStorage.setItem('numeris_plan', returnPlan);
+    // Show success screen
+    document.getElementById('suc-plan').textContent = PLANS[returnPlan].name;
+    document.getElementById('suc-detail').textContent = PLANS[returnPlan].detail;
+    showScreen('success');
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+  // Restore plan from session if user refreshes
+  const savedPlan = sessionStorage.getItem('numeris_plan');
+  if(savedPlan && PLANS[savedPlan] && !returnPlan){
+    S.plan = savedPlan;
+  }
+})();
 
 /* ══════════════════════════════════════════
    PWA — MANIFEST (injected inline)
