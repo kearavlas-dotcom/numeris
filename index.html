@@ -90,6 +90,8 @@ input:focus{border-color:var(--gold);background:rgba(201,168,76,0.05)}
 input[type=text]{text-align:left;font-size:16px}
 .input-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);display:block;margin-bottom:8px}
 .input-hint{font-size:11px;color:var(--text-muted);text-align:center;margin-top:5px;font-style:italic}
+.rs-btn.selected{border-color:var(--gold)!important;background:rgba(201,168,76,0.1)!important;box-shadow:0 0 16px rgba(201,168,76,0.15)}
+.rs-btn.selected div:last-child{color:var(--gold)!important}
 .lp-preview{background:linear-gradient(135deg,rgba(201,168,76,0.07),rgba(123,111,207,0.07));border:1px solid rgba(201,168,76,0.15);border-radius:var(--radius);padding:22px;text-align:center;margin:28px 0;display:none}
 .lp-preview.visible{display:block}
 .lp-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase}
@@ -287,6 +289,27 @@ input[type=text]{text-align:left;font-size:16px}
     <label class="input-label">Your Name (optional)</label>
     <input type="text" id="inp-n" placeholder="Enter your name...">
   </div>
+  <div style="margin-bottom:24px">
+    <label class="input-label">Relationship Status</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+      <div class="rs-btn" id="rs-single" onclick="setRS('single')" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:12px;text-align:center;cursor:pointer;transition:all .3s">
+        <div style="font-size:20px;margin-bottom:4px">💫</div>
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase">Single</div>
+      </div>
+      <div class="rs-btn" id="rs-relationship" onclick="setRS('relationship')" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:12px;text-align:center;cursor:pointer;transition:all .3s">
+        <div style="font-size:20px;margin-bottom:4px">💞</div>
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase">In Relationship</div>
+      </div>
+      <div class="rs-btn" id="rs-married" onclick="setRS('married')" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:12px;text-align:center;cursor:pointer;transition:all .3s">
+        <div style="font-size:20px;margin-bottom:4px">💍</div>
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase">Married</div>
+      </div>
+      <div class="rs-btn" id="rs-complicated" onclick="setRS('complicated')" style="background:rgba(255,255,255,0.03);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:12px;text-align:center;cursor:pointer;transition:all .3s">
+        <div style="font-size:20px;margin-bottom:4px">🌀</div>
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase">It's Complicated</div>
+      </div>
+    </div>
+  </div>
   <div class="lp-preview" id="lp-prev">
     <div class="lp-label">Your Life Path Number</div>
     <div class="lp-num" id="lp-num">—</div>
@@ -460,56 +483,56 @@ const READINGS=[
   /* ── CORE 7 (all plans) ── */
   {id:'blueprint', icon:'🌌', title:'Life Blueprint Decoder',    sub:'Your personality, hidden strengths & destiny blueprint',
    tier:'free',
-   prompt:(d,n)=>`I want you to act as a life-path decoder. My date of birth is ${d}${n?` and my name is ${n}`:``}. Analyze it using psychology, numerology logic, and life-pattern mapping to uncover my deepest personality traits, hidden strengths, weaknesses, and destiny blueprint. Deliver a brutally honest analysis that feels like you've known me forever, and highlight the single biggest purpose I'm meant to pursue in this lifetime.`},
+   prompt:(d,n,rs)=>`I want you to act as a life-path decoder. My date of birth is ${d}${n?` and my name is ${n}`:``}.${rsContext(rs)} Analyze it using psychology, numerology logic, and life-pattern mapping to uncover my deepest personality traits, hidden strengths, weaknesses, and destiny blueprint. Include how my relationship status influences my personal journey. Deliver a brutally honest analysis that feels like you've known me forever, and highlight the single biggest purpose I'm meant to pursue in this lifetime.`},
   {id:'soul',      icon:'✨', title:'Soul Purpose Finder',        sub:'Your core mission, lessons & contribution to the world',
    tier:'free',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, act as my soul-purpose guide. Reveal the core mission of my life, the lessons I am meant to learn, and the contribution I am destined to make to the world. Don't just describe — give me clear, actionable advice on how to align my daily life with this soul purpose starting today.`},
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}.${rsContext(rs)} Act as my soul-purpose guide. Reveal the core mission of my life, the lessons I am meant to learn, and the contribution I am destined to make to the world. Include how my current relationship situation connects to my soul's growth. Give me clear, actionable advice on how to align my daily life with this soul purpose starting today.`},
   {id:'career',    icon:'💼', title:'Career Destiny Finder',      sub:'Your destined paths to extraordinary success',
    tier:'free',
-   prompt:(d,n)=>`You are my future career mentor. Using my date of birth ${d}${n?` (my name is ${n})`:``}, analyze my natural talents, decision-making style, and hidden drives. Then reveal the 3 career or business paths where I am destined to achieve extraordinary success, along with the one field I should absolutely avoid at all costs.`},
+   prompt:(d,n,rs)=>`You are my future career mentor. Using my date of birth ${d}${n?` (my name is ${n})`:``}.${rsContext(rs)} Analyze my natural talents, decision-making style, and hidden drives. Reveal the 3 career or business paths where I am destined to achieve extraordinary success, along with the one field I should absolutely avoid at all costs.`},
   {id:'love',      icon:'💞', title:'Relationship Destiny Map',   sub:'Your love lessons & perfect partner blueprint',
    tier:'year',
-   prompt:(d,n)=>`I will give you my date of birth ${d}${n?` (my name is ${n})`:``}. Based on it, uncover the type of people I am most compatible with, the love lessons I must learn, and the role relationships play in my life journey. Provide me with an exact description of the kind of partner who will help me grow into my highest self.`},
+   prompt:(d,n,rs)=>`I will give you my date of birth ${d}${n?` (my name is ${n})`:``}.${rsContext(rs)} Based on my date of birth AND my current relationship status, give me a deeply personalised love reading. Uncover the type of people I am most compatible with, the love lessons I must learn, and the role relationships play in my life journey. Based on whether I am single, in a relationship, married or in a complicated situation — give me specific, tailored advice for where I am RIGHT NOW in my love life. Describe the kind of partner who will help me grow into my highest self.`},
   {id:'wealth',    icon:'💰', title:'Wealth & Abundance Code',    sub:'Your unique path to financial abundance',
    tier:'year',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, decode the exact way I am meant to attract wealth, opportunities, and abundance in life. Reveal my natural money personality, the mistakes that block my financial growth, and the wealth-building strategy that fits my true self — not generic advice.`},
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}.${rsContext(rs)} Decode the exact way I am meant to attract wealth, opportunities, and abundance in life. Include how my relationship status impacts my financial energy and wealth building. Reveal my natural money personality, the mistakes that block my financial growth, and the wealth-building strategy that fits my true self — not generic advice.`},
   {id:'timeline',  icon:'🗺️', title:'Future Timeline Guide',      sub:'Your past, present & 5-year roadmap ahead',
    tier:'5year',
-   prompt:(d,n)=>`I want you to use my date of birth ${d}${n?` (my name is ${n})`:``} as a time map. Show me the key turning points in my life journey (past, present, and future), the phases of growth and struggle, and the exact 5-year path I am meant to follow. Write it like a roadmap so I can clearly see where I am heading.`},
+   prompt:(d,n,rs)=>`I want you to use my date of birth ${d}${n?` (my name is ${n})`:``} as a time map. Show me the key turning points in my life journey (past, present, and future), the phases of growth and struggle, and the exact 5-year path I am meant to follow. Write it like a roadmap so I can clearly see where I am heading.`},
   {id:'genius',    icon:'🔓', title:'Inner Genius Unlocker',      sub:'Your unique gift & 3-step mastery routine',
    tier:'5year',
-   prompt:(d,n)=>`You are my inner genius mentor. Based on my date of birth ${d}${n?` (my name is ${n})`:``}, identify the unique talent or skill that sets me apart from 99% of people. Then give me a practical 3-step daily routine I can follow to unlock this genius and turn it into mastery and recognition in my lifetime.`},
+   prompt:(d,n,rs)=>`You are my inner genius mentor. Based on my date of birth ${d}${n?` (my name is ${n})`:``}, identify the unique talent or skill that sets me apart from 99% of people. Then give me a practical 3-step daily routine I can follow to unlock this genius and turn it into mastery and recognition in my lifetime.`},
 
   /* ── 5-YEAR EXCLUSIVE (4 extra) ── */
   {id:'phases',    icon:'📅', title:'Life Phase Age Map',         sub:'Exact ages & 5-year turning points on your life path',
    tier:'5year',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, map the exact ages and 5-year phases in my life, showing when the key turning points, breakthroughs, and life-purpose moments are likely to occur. Create a literal roadmap based on my Life Path number. Be specific with ages, label each phase clearly, and describe what I should be doing or expecting during each one.`},
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, map the exact ages and 5-year phases in my life, showing when the key turning points, breakthroughs, and life-purpose moments are likely to occur. Create a literal roadmap based on my Life Path number. Be specific with ages, label each phase clearly, and describe what I should be doing or expecting during each one.`},
   {id:'roadmap',   icon:'🧭', title:'5-Year Cycle Roadmap',       sub:'Visual timeline of cycles, turning points & purpose milestones',
    tier:'5year',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a visual "timeline roadmap" with all key 5-year cycles, turning points, and purpose milestones so I can see my life unfold like a strategic map. Format it clearly with phases, ages, labels, and what each cycle means for my growth. Make it feel like a real strategic life plan.`},
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a visual "timeline roadmap" with all key 5-year cycles, turning points, and purpose milestones so I can see my life unfold like a strategic map. Format it clearly with phases, ages, labels, and what each cycle means for my growth. Make it feel like a real strategic life plan.`},
   {id:'overlay',   icon:'🌈', title:'Multi-Layer Life Overlay',   sub:'Romantic, financial & spiritual milestones on your 5-year cycles',
    tier:'5year',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a next-level version of my life roadmap, where you clearly mark: Romantic turning points 💞, Financial/career breakthroughs 💰, and Spiritual growth milestones ✨ — all overlaid on my 5-year cycles, so I can see when each life area is "active" for maximum alignment. Use symbols and labels to make it visually clear.`},
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a next-level version of my life roadmap, where you clearly mark: Romantic turning points 💞, Financial/career breakthroughs 💰, and Spiritual growth milestones ✨ — all overlaid on my 5-year cycles, so I can see when each life area is "active" for maximum alignment. Use symbols and labels to make it visually clear.`},
   {id:'soulmap',   icon:'⭐', title:'Soul-Purpose Roadmap',        sub:'Breakthroughs, relationships, career & spiritual awakenings aligned',
    tier:'5year',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a personalized 5-year soul-purpose roadmap, showing when major breakthroughs, relationships, career milestones, and spiritual awakenings will occur, perfectly aligned with my Life Path number. Write it as a detailed, inspiring roadmap that shows me exactly where I'm headed and when.`},
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a personalized 5-year soul-purpose roadmap, showing when major breakthroughs, relationships, career milestones, and spiritual awakenings will occur, perfectly aligned with my Life Path number. Write it as a detailed, inspiring roadmap that shows me exactly where I'm headed and when.`},
 
   /* ── LIFETIME EXCLUSIVE (5 extra) ── */
   {id:'yr9',       icon:'🔮', title:'9-Year Personal Year Cycle', sub:'Full 9-year map of love, career & spiritual growth by year',
    tier:'lifetime',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, map out my full 9-year Personal Year cycle, showing the exact focus areas for love, career, and spiritual growth for each of the 9 years, perfectly aligned with my Life Path number. Label each Personal Year (1–9), explain what it means, and give me specific actions I should take during each one.`},
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, map out my full 9-year Personal Year cycle, showing the exact focus areas for love, career, and spiritual growth for each of the 9 years, perfectly aligned with my Life Path number. Label each Personal Year (1–9), explain what it means, and give me specific actions I should take during each one.`},
   {id:'masterviz', icon:'🌐', title:'Complete Life Vision Map',    sub:'9-year cycle + life roadmap + all turning points unified',
    tier:'lifetime',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, combine my full 9-year Personal Year cycle with my earlier life roadmap and romantic, career, and spiritual turning points into a single, unified visual timeline, so I can see my entire life and growth blueprint at a glance. Format it clearly with years, phases, and category labels.`},
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, combine my full 9-year Personal Year cycle with my earlier life roadmap and romantic, career, and spiritual turning points into a single, unified visual timeline, so I can see my entire life and growth blueprint at a glance. Format it clearly with years, phases, and category labels.`},
   {id:'wealthblue',icon:'💎', title:'Wealth & Abundance Blueprint',sub:'Financial opportunities, life milestones & abundance peak years',
    tier:'lifetime',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a full "Wealth & Abundance Blueprint" timeline, overlaying financial opportunities, life-purpose milestones, and personal year cycles so I can see the exact years where money, career, and abundance peak naturally. Give me specific years, what to focus on, and how to capitalize on each peak.`},
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a full "Wealth & Abundance Blueprint" timeline, overlaying financial opportunities, life-purpose milestones, and personal year cycles so I can see the exact years where money, career, and abundance peak naturally. Give me specific years, what to focus on, and how to capitalize on each peak.`},
   {id:'colormap',  icon:'🎨', title:'Color-Coded Life Blueprint',  sub:'Love, career, spirit & purpose mapped across your entire life 0–70+',
    tier:'lifetime',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a color-coded visual timeline diagram showing: Love milestones (💞 red), Career/wealth breakthroughs (💰 green), Spiritual growth (✨ blue), and Life-purpose milestones (⭐ gold) — across my life from ages 0 to 70+, so I can see my entire life blueprint at a glance. Be specific with ages and label each key moment clearly.`},
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, create a color-coded visual timeline diagram showing: Love milestones (💞 red), Career/wealth breakthroughs (💰 green), Spiritual growth (✨ blue), and Life-purpose milestones (⭐ gold) — across my life from ages 0 to 70+, so I can see my entire life blueprint at a glance. Be specific with ages and label each key moment clearly.`},
   {id:'yearreport',icon:'📆', title:'Personal Year Report',        sub:`Your focused roadmap for ${new Date().getFullYear()} — what to prioritize this year`,
    tier:'lifetime',
-   prompt:(d,n)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, generate my personalized Personal Year Report for ${new Date().getFullYear()}. Calculate my Personal Year number for this year and provide a detailed, actionable roadmap covering: the theme and energy of this year, key opportunities in love, career, finances, and spiritual growth, important months to watch, what to focus on, what to avoid, and specific actions I should take to make the most of this personal year cycle.`}
+   prompt:(d,n,rs)=>`Using my date of birth ${d}${n?` (my name is ${n})`:``}, generate my personalized Personal Year Report for ${new Date().getFullYear()}. Calculate my Personal Year number for this year and provide a detailed, actionable roadmap covering: the theme and energy of this year, key opportunities in love, career, finances, and spiritual growth, important months to watch, what to focus on, what to avoid, and specific actions I should take to make the most of this personal year cycle.`}
 ];
 
 /* Which reading IDs each plan unlocks */
@@ -526,7 +549,24 @@ const TIER_LABELS={free:'Free',year:'Annual',['5year']:'5-Year','lifetime':'Life
 /* ══════════════════════════════════════════
    STATE
 ══════════════════════════════════════════ */
-let S={plan:'free',trialUsed:false,selPlanId:'5year',dob:'',name:'',lp:0};
+let S={plan:'free',trialUsed:false,selPlanId:'5year',dob:'',name:'',lp:0,rs:''};
+
+function setRS(status){
+  S.rs=status;
+  document.querySelectorAll('.rs-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('rs-'+status).classList.add('selected');
+}
+
+function rsContext(rs){
+  if(!rs) return '';
+  const ctx={
+    single: 'I am currently single and looking to understand my love life, what I attract, and what kind of partner I am destined for.',
+    relationship: 'I am currently in a relationship and want to understand my compatibility, the dynamics of my current partnership, and how to deepen my connection.',
+    married: 'I am married and want to understand the deeper spiritual and numerological dynamics of my marriage, how to strengthen our bond, and grow together.',
+    complicated: 'My relationship status is complicated right now. I want to understand my emotional patterns, what is blocking love in my life, and how to find clarity.'
+  };
+  return ' ' + (ctx[rs]||'');
+}
 
 /* ══════════════════════════════════════════
    UTILS
@@ -602,7 +642,7 @@ function startReading(){
         m=parseInt(document.getElementById('inp-m').value),
         y=parseInt(document.getElementById('inp-y').value),
         n=document.getElementById('inp-n').value.trim();
-  S.dob=fmtDOB(d,m,y);S.name=n;S.lp=calcLP(d,m,y);
+  S.dob=fmtDOB(d,m,y);S.name=n;S.lp=calcLP(d,m,y);S.rs=S.rs||'';
   if(S.plan==='free')S.trialUsed=true;
   buildResultsUI();
   showScreen('results');
@@ -687,7 +727,7 @@ function loadPanels(){
   READINGS.forEach(async(r,i)=>{
     if(!access.includes(r.id))return;
     try{
-      const txt=await callClaude(r.prompt(S.dob,S.name));
+      const txt=await callClaude(r.prompt(S.dob,S.name,S.rs));
       const el=document.getElementById('content-'+i);
       el.className='panel-content';el.textContent=txt;
     }catch(e){
@@ -702,7 +742,7 @@ async function retryPanel(i){
   const r=READINGS[i];
   const el=document.getElementById('content-'+i);
   el.className='panel-content loading';el.innerHTML='<div class="spinner"></div><span>Loading your reading...</span>';
-  try{const t=await callClaude(r.prompt(S.dob,S.name));el.className='panel-content';el.textContent=t;}
+  try{const t=await callClaude(r.prompt(S.dob,S.name,S.rs));el.className='panel-content';el.textContent=t;}
   catch(e){el.className='panel-content';el.innerHTML=`<div class="err-msg">Unable to load this reading.<br><small>${e.message}</small></div><button class="retry-btn" onclick="retryPanel(${i})">Retry</button>`;}
 }
 
@@ -729,7 +769,8 @@ function resetApp(){
   ['inp-d','inp-m','inp-y','inp-n'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('lp-prev').classList.remove('visible');
   document.getElementById('gen-btn').disabled=true;
-  S.dob='';S.name='';S.lp=0;
+  S.dob='';S.name='';S.lp=0;S.rs='';
+  document.querySelectorAll('.rs-btn').forEach(b=>b.classList.remove('selected'));
   showScreen('intro');
 }
 
