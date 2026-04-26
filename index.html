@@ -707,7 +707,8 @@ async function retryPanel(i){
 }
 
 async function callClaude(prompt){
-  const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":"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","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:prompt}]})});
+  // API key is stored privately in Cloudflare Worker — never exposed in code
+  const r=await fetch("https://twilight-leaf-ad54.vlas-olga.workers.dev/",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1200,messages:[{role:"user",content:prompt}]})});
   const d=await r.json();
   if(d.error)throw new Error(d.error.message);
   return d.content.map(b=>b.text||'').join('');
